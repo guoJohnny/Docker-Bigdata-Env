@@ -5,4 +5,9 @@ demo-example
 *.tar.gz
 *.tar
 *.tgz
+**/*.zip
+**/*.bin
+**/*.gz
+**/*.rpm
 docker_k8s.code-workspace
+volume
