@@ -3,35 +3,60 @@
 		<name>yarn.nodemanager.aux-services</name>
 		<value>mapreduce_shuffle</value>
 	</property>
+	<!-- Site specific YARN configuration properties -->
+    <!--启用resourcemanager ha-->  
+    <!--是否开启RM ha，默认是开启的-->  
+    <property>  
+       <name>yarn.resourcemanager.ha.enabled</name>  
+       <value>true</value>  
+    </property>
+	<!--声明两台resourcemanager的地址-->  
+    <property>  
+       <name>yarn.resourcemanager.cluster-id</name>  
+       <value>master</value>  
+    </property>  
+    <property>  
+       <name>yarn.resourcemanager.ha.rm-ids</name>  
+       <value>master1,master2</value>  
+    </property>  
+    <property>  
+       <name>yarn.resourcemanager.hostname.master1</name>  
+       <value>master1</value>  
+    </property>  
+    <property>  
+       <name>yarn.resourcemanager.hostname.master2</name>  
+       <value>master2</value>  
+    </property>
+	
+	<!--指定zookeeper集群的地址-->   
+    <property>  
+       <name>yarn.resourcemanager.zk-address</name>  
+        <value>slave1:2181,slave2:2181,slave3:2181</value>  
+    </property>  
+    <!--启用自动恢复，当任务进行一半，rm坏掉，就要启动自动恢复，默认是false-->   
+    <property>  
+       <name>yarn.resourcemanager.recovery.enabled</name>  
+       <value>true</value>  
+    </property>  
+   
+    <!--指定resourcemanager的状态信息存储在zookeeper集群，默认是存放在FileSystem里面。-->   
+    <property>  
+       <name>yarn.resourcemanager.store.class</name>  
+       <value>org.apache.hadoop.yarn.server.resourcemanager.recovery.ZKRMStateStore</value>  
+    </property>
 	<property>
-		<name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
-		<value>org.apache.hadoop.mapred.ShuffleHandler</value>
-	</property>
-	<property>
-        <name>yarn.resourcemanager.hostname</name>
-        <value>master</value>
+        <name>yarn.resourcemanager.ha.automatic-failover.zk-base-path</name>
+        <value>/yarn-leader-election</value>
+        <description>Optionalsetting.Thedefaultvalueis/yarn-leader-election</description>
     </property>
+
 	<property>
-		<name>yarn.resourcemanager.address</name>
-		<value>master:8032</value>
-	</property>
-	<property>
-		<name>yarn.resourcemanager.scheduler.address</name>
-		<value>master:8030</value>
-	</property>
-	<property>
-		<name>yarn.resourcemanager.resource-tracker.address</name>
-		<value>master:8035</value>
-	</property>
-	<property>
-		<name>yarn.resourcemanager.admin.address</name>
-		<value>master:8033</value>
+		<name>yarn.resourcemanager.webapp.address</name>
+		<value>master1:8088</value>
 	</property>
 	<property>
 		<name>yarn.resourcemanager.webapp.address</name>
-		<value>master:8088</value>
+		<value>master2:8088</value>
 	</property>
-	
-
 	
 </configuration>

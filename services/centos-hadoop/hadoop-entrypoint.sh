@@ -6,13 +6,7 @@ startMaster(){
 	./start-all.sh 
 }
 
-configSlave(){
-	sed -i '$d' /usr/local/hadoop-2.8.3/etc/hadoop/yarn-site.xml
-	echo "<property><name>yarn.nodemanager.hostname</name><value>${HOSTNAME}</value></property>" >> /usr/local/hadoop-2.8.3/etc/hadoop/yarn-site.xml
-	echo "<property><name>yarn.nodemanager.address</name><value>${HOSTNAME}:9999</value></property>" >> /usr/local/hadoop-2.8.3/etc/hadoop/yarn-site.xml
-	echo "<property><name>yarn.nodemanager.bind-host</name><value>${HOSTNAME}</value></property>" >> /usr/local/hadoop-2.8.3/etc/hadoop/yarn-site.xml
-	echo "</configuration>" >> /usr/local/hadoop-2.8.3/etc/hadoop/yarn-site.xml
-}
+
 
 createWordCount(){
 	hadoop fs -mkdir -p /data/wordcount
@@ -29,11 +23,13 @@ createWordCount(){
 
 main(){
 
-	echo "$(sed '1,6d' /etc/hosts)" > /etc/hosts	
+	echo "$(sed '1,6d' /etc/hosts)" > /etc/hosts
+	sed -i '$d' /usr/local/hadoop-2.8.3/etc/hadoop/yarn-site.xml
+	echo "<property><name>yarn.nodemanager.hostname</name><value>${HOSTNAME}</value></property>" >> /usr/local/hadoop-2.8.3/etc/hadoop/yarn-site.xml
+	echo "<property><name>yarn.nodemanager.address</name><value>${HOSTNAME}:9999</value></property>" >> /usr/local/hadoop-2.8.3/etc/hadoop/yarn-site.xml
+	echo "<property><name>yarn.nodemanager.bind-host</name><value>${HOSTNAME}</value></property>" >> /usr/local/hadoop-2.8.3/etc/hadoop/yarn-site.xml
+	echo "</configuration>" >> /usr/local/hadoop-2.8.3/etc/hadoop/yarn-site.xml	
 
-	if [ ${ROLE} == "slave" ];then
-		configSlave
-	fi
 	/etc/init.d/sshd restart 
 	sleep 5
 

@@ -83,3 +83,67 @@
     Master: 1) Disable IP v6 2) Disable the firewall 3) Use Physical IP in hdfs-site.xml and mapered XML file instead of localhost. 4) In etc/hosts file, please comment all entries except master physical IP and datanode physical IP address. All IP starting from 127.*** and IP v6 entries should be commented.
 
     Datanode: 1) In etc/hosts file, please comment all entries except master physical IP and datanode physical IP address. All IP starting from 127.*** and IP v6 entries should be commented. 2) Use Physical IP in hdfs-site.xml and mapered XML file instead of localhost.
+
+
+    cd /usr/local/hadoop-2.8.3/sbin	
+	./hadoop-daemon.sh start journalnode	
+
+    	cd /usr/local/hadoop-2.8.3/sbin		
+	if [ ${HOSTNAME} == "master1" ];then
+		echo "${HOSTNAME}"
+		hdfs zkfc -formatZK		
+		hdfs namenode -format
+		./start-dfs.sh && ./start-yarn.sh 
+	else
+		echo "${HOSTNAME}"
+		hdfs zkfc -formatZK
+		hdfs namenode -bootstrapStandby	
+		./hadoop-daemon.sh start namenode && ./yarn-daemon.sh start resourcemanager
+	fi
+
+    hdfs namenode -format
+		./start-all.sh  
+
+
+    hdfs namenode -bootstrapStandby	
+		./hadoop-daemon.sh start namenode && ./yarn-daemon.sh start resourcemanager
+
+    hdfs haadmin -getServiceState master1
+    yarn rmadmin -getServiceState master1 
+
+    
+    #自动选举avtive
+
+    hdfs haadmin -failover master1 master2
+
+    hdfs --daemon stop namenode
+
+
+# Hadoop-HA MacOSX docker问题描述
+出现connect refused问题，端口为8485、8480、9000等端口连接不上的问题。主要集中于 JournalNode 节点。做Wordcount  例子的 Mapreduce 过程中也会出现这个问题。就是没有在配置中指定 Journalnode 端口，这样即使是在当前 netstat 命令得到在本地有开启相应端口，journalnode 也不允许外部节点访问，造成connect refuse 问题。
+
+    [root@slave2 /]# netstat -ntlp
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address               Foreign Address             State       PID/Program name   
+tcp        0      0 172.16.0.202:8480           0.0.0.0:*                   LISTEN      46/java             
+tcp        0      0 127.0.0.1:50020             0.0.0.0:*                   LISTEN      157/java            
+tcp        0      0 0.0.0.0:2181                0.0.0.0:*                   LISTEN      102/java            
+tcp        0      0 172.16.0.202:8485           0.0.0.0:*                   LISTEN      46/java             
+tcp        0      0 172.16.0.202:8040           0.0.0.0:*                   LISTEN      329/java            
+tcp        0      0 172.16.0.202:8042           0.0.0.0:*                   LISTEN      329/java            
+tcp        0      0 172.16.0.202:9999           0.0.0.0:*                   LISTEN      329/java            
+tcp        0      0 127.0.0.1:44719             0.0.0.0:*                   LISTEN      157/java            
+tcp        0      0 172.16.0.202:3888           0.0.0.0:*                   LISTEN      102/java            
+
+如果不显式配置，会出现 0.0.0.0:8485、  0.0.0.0:8480、 0.0.0.0:9999、
+
+解决方法，手动在各个节点上添加 rpc 地址，http 地址配置。
+    sed -i '$d' /usr/local/hadoop-2.8.3/etc/hadoop/yarn-site.xml
+	echo "<property><name>yarn.nodemanager.hostname</name><value>${HOSTNAME}</value></property>" >> /usr/local/hadoop-2.8.3/etc/hadoop/yarn-site.xml
+	echo "<property><name>yarn.nodemanager.address</name><value>${HOSTNAME}:9999</value></property>" >> /usr/local/hadoop-2.8.3/etc/hadoop/yarn-site.xml
+	echo "<property><name>yarn.nodemanager.bind-host</name><value>${HOSTNAME}</value></property>" >> /usr/local/hadoop-2.8.3/etc/hadoop/yarn-site.xml
+	echo "</configuration>" >> /usr/local/hadoop-2.8.3/etc/hadoop/yarn-site.xml
+	sed -i '$d' /usr/local/hadoop-2.8.3/etc/hadoop/hdfs-site.xml
+	echo "<property><name>dfs.journalnode.rpc-address</name><value>${HOSTNAME}:8485</value></property>" >> /usr/local/hadoop-2.8.3/etc/hadoop/hdfs-site.xml
+	echo "<property><name>dfs.journalnode.http-address</name><value>${HOSTNAME}:8480</value></property>" >> /usr/local/hadoop-2.8.3/etc/hadoop/hdfs-site.xml
+	echo "</configuration>" >> /usr/local/hadoop-2.8.3/etc/hadoop/hdfs-site.xml
