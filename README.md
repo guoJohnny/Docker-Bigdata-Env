@@ -40,6 +40,8 @@
 
     echo "$(sed 's/localhost/slave1 localhost/g' /etc/hosts)" > /etc/hosts
 
+    hadoop fs -put /home/root/data/myword.txt /data/wordcount
+
     hadoop jar /usr/local/hadoop-2.8.3/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.8.3.jar wordcount /data/wordcount /output/wordcount
 
     hadoop fs -cat /output/wordcount/part-r-00000
@@ -147,3 +149,28 @@ tcp        0      0 172.16.0.202:3888           0.0.0.0:*                   LIST
 	echo "<property><name>dfs.journalnode.rpc-address</name><value>${HOSTNAME}:8485</value></property>" >> /usr/local/hadoop-2.8.3/etc/hadoop/hdfs-site.xml
 	echo "<property><name>dfs.journalnode.http-address</name><value>${HOSTNAME}:8480</value></property>" >> /usr/local/hadoop-2.8.3/etc/hadoop/hdfs-site.xml
 	echo "</configuration>" >> /usr/local/hadoop-2.8.3/etc/hadoop/hdfs-site.xml
+
+主从mysql进行同步操作
+
+    show master status;
+
+    #记录 主数据库 binary-log 的 文件名称 和 数据同步起始位置。
+
+    CHANGE MASTER TO
+        MASTER_HOST='mysql-master',
+        MASTER_USER='root',
+        MASTER_PASSWORD='root',
+        MASTER_LOG_FILE='replicas-mysql-bin.000003',
+        MASTER_LOG_POS=154;
+
+    start slave
+
+DROP TABLE IF EXISTS `course`;
+CREATE TABLE `course` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(20) NOT NULL,
+  `lesson_period` double(5,0) DEFAULT NULL,
+  `score` double(10,0) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+

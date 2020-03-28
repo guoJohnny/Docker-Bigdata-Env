@@ -1,0 +1,56 @@
+version: '2'
+services:
+  mysql-master:
+    hostname: mysql-master
+    image: mysql:5.7.17
+    container_name: mysql-master # 指定容器名称，如果不设置此参数，则由系统自动生成
+    restart: always # 设置容器自启模式
+    privileged: true
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci # 设置utf8字符集
+    environment:
+      - TZ=Asia/Shanghai # 设置容器时区与宿主机保持一致
+      - MYSQL_ROOT_PASSWORD=root # 设置root密码
+      - MYSQL_DATABASE=replicas_db 
+    volumes:
+       - ./volume/cluster/master:/var/lib/mysql # 映射数据库保存目录到宿主机，防止数据丢失
+       - ./conf/my.master.cnf:/etc/mysql/my.cnf # 映射数据库配置文件
+    networks:
+      default:
+        ipv4_address: 172.16.0.1
+    extra_hosts:
+      - "mysql-slave:172.16.0.2"
+    ports:
+        - "3306:3306"
+
+  mysql-slave:
+    hostname: mysql-slave
+    image: mysql:5.7.17
+    container_name: mysql-slave # 指定容器名称，如果不设置此参数，则由系统自动生成
+    restart: always # 设置容器自启模式
+    privileged: true
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci # 设置utf8字符集
+    environment:
+      - TZ=Asia/Shanghai # 设置容器时区与宿主机保持一致
+      - MYSQL_ROOT_PASSWORD=root # 设置root密码
+      - MYSQL_DATABASE=replicas_db 
+    volumes:
+       - ./volume/cluster/slave:/var/lib/mysql # 映射数据库保存目录到宿主机，防止数据丢失
+       - ./conf/my.slave.cnf:/etc/mysql/my.cnf # 映射数据库配置文件
+    networks:
+      default:
+        ipv4_address: 172.16.0.2
+    extra_hosts:
+      - "mysql-master:172.16.0.1"
+    ports:
+        - "3307:3306"
+
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.16.0.0/16
+        gateway: 172.16.0.249

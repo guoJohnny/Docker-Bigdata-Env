@@ -5,7 +5,8 @@ services:
     image: guojohnny/centos:hadoop-ha
     container_name: hadoop-master1
     volumes:
-      - ./conf-hadoop-HA/slaves:/usr/local/hadoop/hadoop-2.8.3/etc/hadoop/slaves
+      - ./conf-hadoop-HA/slaves:/usr/local/hadoop-2.8.3/etc/hadoop/slaves:ro
+      - ./volume/test/myword.txt:/home/root/data/myword.txt
     networks:
       default:
         ipv4_address: 172.16.0.101
@@ -17,6 +18,7 @@ services:
     ports:
       - "8088:8088"
       - "50070:50070"
+      - "9000:9000"
     hostname: master1
     environment:
       ROLE: master
@@ -32,7 +34,7 @@ services:
     image: guojohnny/centos:hadoop-ha
     container_name: hadoop-master2
     volumes:
-      - ./conf-hadoop-HA/slaves:/usr/local/hadoop/hadoop-2.8.3/etc/hadoop/slaves
+      - ./conf-hadoop-HA/slaves:/usr/local/hadoop-2.8.3/etc/hadoop/slaves:ro
     networks:
       default:
         ipv4_address: 172.16.0.102
@@ -60,10 +62,12 @@ services:
     image: guojohnny/centos:hadoop-ha
     container_name: hadoop-slave1
     volumes:
-      - ./conf-hadoop-HA/slaves:/usr/local/hadoop/hadoop-2.8.3/etc/hadoop/slaves
+      - ./conf-hadoop-HA/slaves:/usr/local/hadoop-2.8.3/etc/hadoop/slaves:ro
     networks:
       default:
         ipv4_address: 172.16.0.201
+    ports:
+      - "8042:8042"
     extra_hosts:
       - "master1:172.16.0.101"
       - "master2:172.16.0.102"
@@ -81,7 +85,7 @@ services:
     image: guojohnny/centos:hadoop-ha
     container_name: hadoop-slave2
     volumes:
-      - ./conf-hadoop-HA/slaves:/usr/local/hadoop/hadoop-2.8.3/etc/hadoop/slaves
+      - ./conf-hadoop-HA/slaves:/usr/local/hadoop-2.8.3/etc/hadoop/slaves:ro
     networks:
       default:
         ipv4_address: 172.16.0.202
@@ -102,7 +106,7 @@ services:
     image: guojohnny/centos:hadoop-ha
     container_name: hadoop-slave3
     volumes:
-      - ./conf-hadoop-HA/slaves:/usr/local/hadoop/hadoop-2.8.3/etc/hadoop/slaves
+      - ./conf-hadoop-HA/slaves:/usr/local/hadoop-2.8.3/etc/hadoop/slaves:ro
     networks:
       default:
         ipv4_address: 172.16.0.203

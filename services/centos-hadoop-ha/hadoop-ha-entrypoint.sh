@@ -24,6 +24,9 @@ startMaster(){
 }
 
 configSlave(){
+	# 对 slave nodemanager 地址和 journalnode rpc地址单独做配置
+	# 如果不做配置会造成 connection refused ， master 节点连接不到 slave 节点服务。
+	# 出现错误环境：docker desktop for mac Version 2.2.1.0 edge
 	mkdir -p  /usr/local/hadoop-2.8.3/dfs/data/journal
 	sed -i '$d' /usr/local/hadoop-2.8.3/etc/hadoop/yarn-site.xml
 	echo "<property><name>yarn.nodemanager.hostname</name><value>${HOSTNAME}</value></property>" >> /usr/local/hadoop-2.8.3/etc/hadoop/yarn-site.xml
