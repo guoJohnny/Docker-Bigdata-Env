@@ -174,3 +174,12 @@ CREATE TABLE `course` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+
+
+
+ENV HADOOP_HOME=/usr/local/hadoop-2.8.3
+ENV PATH $HADOOP_HOME/bin:$PATH
+
+./spark-shell --master spark://master1:7077 --executor-memory 512M --total-executor-cores 2
+
+sc.textFile("hdfs://master1:9000/data/wordcount/myword.txt").flatMap(line => line.split(" ")).map(word => (word, 1)).reduceByKey(_ + _).sortBy(_._2,false).take(10).foreach(println)

@@ -1,0 +1,140 @@
+version:  '2'
+services:
+
+  master1:
+    image: guojohnny/centos:spark-ha
+    container_name: hadoop-master1
+    volumes:
+      - ./conf-spark/:/usr/local/spark-2.4.5/conf/:ro
+      - ./test/myword.txt:/home/root/data/myword.txt
+    networks:
+      default:
+        ipv4_address: 172.16.0.101
+    extra_hosts:
+      - "master2:172.16.0.102"
+      - "slave1:172.16.0.201"
+      - "slave2:172.16.0.202"
+      - "slave3:172.16.0.203"
+    ports:
+      - "8088:8088"
+      - "50070:50070"
+      - "9000:9000"
+      - "7077:7077"
+      - "8080:8080"
+    hostname: master1
+    environment:
+      ROLE: master
+      HOSTNAME: master1
+    depends_on: 
+      - slave1
+      - slave2
+      - slave3
+    tty: true
+    stdin_open: true
+
+  master2:
+    image: guojohnny/centos:spark-ha
+    container_name: hadoop-master2
+    # volumes:
+    #   - ./conf-hadoop-HA/slaves:/usr/local/hadoop-2.8.3/etc/hadoop/slaves:ro
+    networks:
+      default:
+        ipv4_address: 172.16.0.102
+    extra_hosts:
+      - "master1:172.16.0.101"
+      - "slave1:172.16.0.201"
+      - "slave2:172.16.0.202"
+      - "slave3:172.16.0.203"
+    ports:
+      - "8089:8088"
+      - "50071:50070"
+      - "8081:8080"
+    hostname: master2
+    environment:
+      ROLE: master
+      HOSTNAME: master2
+    depends_on: 
+      - slave1
+      - slave2
+      - slave3
+      - master1
+    tty: true
+    stdin_open: true
+
+  slave1:
+    image: guojohnny/centos:spark-ha
+    container_name: hadoop-slave1
+    volumes:
+      - ./conf-spark/:/usr/local/spark-2.4.5/conf/:ro
+    networks:
+      default:
+        ipv4_address: 172.16.0.201
+    ports:
+      - "8042:8042"
+    extra_hosts:
+      - "master1:172.16.0.101"
+      - "master2:172.16.0.102"
+      - "slave2:172.16.0.202"
+      - "slave3:172.16.0.203"
+    hostname: slave1
+    environment:
+      ROLE: slave
+      HOSTNAME: slave1
+      ZK_ID: 1
+    tty: true
+    stdin_open: true
+
+  slave2:
+    image: guojohnny/centos:spark-ha
+    container_name: hadoop-slave2
+    volumes:
+      - ./conf-spark/:/usr/local/spark-2.4.5/conf/:ro
+    networks:
+      default:
+        ipv4_address: 172.16.0.202
+    extra_hosts:
+      - "master1:172.16.0.101"
+      - "master2:172.16.0.102"
+      - "slave1:172.16.0.201"
+      - "slave3:172.16.0.203"    
+    hostname: slave2
+    environment:
+      ROLE: slave
+      HOSTNAME: slave2
+      ZK_ID: 2
+    tty: true
+    stdin_open: true
+
+  slave3:
+    image: guojohnny/centos:spark-ha
+    container_name: hadoop-slave3
+    volumes:
+      - ./conf-spark/:/usr/local/spark-2.4.5/conf/:ro
+    networks:
+      default:
+        ipv4_address: 172.16.0.203
+    extra_hosts:
+      - "master1:172.16.0.101"
+      - "master2:172.16.0.102"
+      - "slave1:172.16.0.201"
+      - "slave2:172.16.0.202"    
+    hostname: slave3
+    environment:
+      ROLE: slave
+      HOSTNAME: slave3
+      ZK_ID: 3
+    tty: true
+    stdin_open: true
+
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.16.0.0/16
+        gateway: 172.16.0.249
+
+
