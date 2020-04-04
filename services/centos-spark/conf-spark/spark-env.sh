@@ -73,6 +73,9 @@ export HADOOP_HOME=/usr/local/hadoop-2.8.3
 export SPARK_DIST_CLASSPATH=$($HADOOP_HOME/bin/hadoop classpath)
 export HADOOP_CONF_DIR=/usr/local/hadoop-2.8.3/etc/hadoop
 export YARN_CONF_DIR=/usr/local/hadoop-2.8.3/etc/hadoop/yarn-site.xml
+export SPARK_EXECUTOR_CORES=2
+export SPARK_EXECUTOR_MEMORY=1G
+export SPARK_DRIVER_MEMORY=1G
 export SPARK_MASTER_PORT=7077
 export SPARK_DAEMON_JAVA_OPTS="-Dspark.deploy.recoveryMode=ZOOKEEPER
 -Dspark.deploy.zookeeper.url=slave1:2181,slave2:2181,slave3:2181 -Dspark.deploy.zookeeper.dir=/spark"
