@@ -176,10 +176,51 @@ CREATE TABLE `course` (
 
 
 
+./spark-shell --master spark://master1:7077 --executor-memory 512M --total-executor-cores 2 --num-executors 2
 
-ENV HADOOP_HOME=/usr/local/hadoop-2.8.3
-ENV PATH $HADOOP_HOME/bin:$PATH
+./bin/spark-shell --master yarn --deploy-mode client --executor-memory 512M --total-executor-cores 2 --num-executors 2
 
-./spark-shell --master spark://master1:7077 --executor-memory 512M --total-executor-cores 2
+sc.textFile("hdfs://master/data/wordcount/myword.txt").flatMap(line => line.split(" ")).map(word => (word, 1)).reduceByKey(_ + _).sortBy(_._2,false).take(10).foreach(println)
 
-sc.textFile("hdfs://master1:9000/data/wordcount/myword.txt").flatMap(line => line.split(" ")).map(word => (word, 1)).reduceByKey(_ + _).sortBy(_._2,false).take(10).foreach(println)
+
+./bin/spark-submit --class org.apache.spark.examples.SparkPi \
+    --master yarn \
+    --deploy-mode cluster \
+    --driver-memory  1g\
+    --executor-memory 512m \
+    --executor-cores 2 \
+    $SPARK_HOME/examples/jars/spark-examples_2.12-2.4.5.jar \
+    10
+
+./bin/spark-submit --class org.apache.spark.examples.SparkPi \
+    --master yarn \
+    --deploy-mode client \
+    --driver-memory 1g \
+    --executor-memory 1g \
+    --executor-cores 1 \
+    $SPARK_HOME/examples/jars/spark-examples_2.12-2.4.5.jar \
+    4
+
+yarn 节点报错
+    20/04/03 02:23:54 ERROR ApplicationMaster: Uncaught exception: 
+org.apache.hadoop.yarn.exceptions.ApplicationAttemptNotFoundException: Application attempt appattempt_1585880520954_0001_000002 doesn't exist in ApplicationMasterService cache.
+	at org.apache.hadoop.yarn.server.resourcemanager.ApplicationMasterService.allocate(ApplicationMasterService.java:403)
+
+yarn applicationattempt -list application_1585960921894_0001
+yarn applicationattempt -status appattempt_1585960921894_0001_000001
+
+pplication Attempt Report : 
+        ApplicationAttempt-Id : appattempt_1585960921894_0001_000001
+        State : FAILED
+        AMContainer : container_1585960921894_0001_01_000001
+        Tracking-URL : http://master2:8088/cluster/app/application_1585960921894_0001
+        RPC Port : -1
+        AM Host : N/A
+        Diagnostics : AM Container for appattempt_1585960921894_0001_000001 exited with  exitCode: -103
+Failing this attempt.Diagnostics: Container [pid=931,containerID=container_1585960921894_0001_01_000001] is running beyond virtual memory limits. Current usage: 287.8 MB of 1 GB physical memory used; 2.2 GB of 2.1 GB virtual memory used. Killing container.
+
+需要修改yarn-site.xml和hdfs-site.xml的内存大小限制，使用默认的配置会出错。
+
+    WARN yarn.Client: Neither spark.yarn.jars nor spark.yarn.archive is set, falling back to uploading libraries under SPARK_HOME.
+    https://www.cnblogs.com/honeybee/p/6379599.html
+    https://blog.csdn.net/Coder__CS/article/details/79301969
