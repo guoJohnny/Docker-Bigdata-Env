@@ -1,0 +1,22 @@
+<configuration>
+	<property>
+		<name>mapreduce.framework.name</name>
+		<value>yarn</value>
+	</property>
+	<property>  
+        <name>mapreduce.jobhistory.address</name>  
+        <value>master1:10020</value>  
+    </property>  
+    <property>  
+        <name>mapreduce.jobhistory.webapp.address</name>  
+        <value>master1:19888</value>  
+    </property>
+	<property>
+		<name>mapreduce.cluster.map.memory.mb</name>
+		<value>2048</value>
+	</property>
+	<property>
+		<name>mapreduce.cluster.reduce.memory.mb</name>
+		<value>4096</value>
+	</property>
+</configuration>
