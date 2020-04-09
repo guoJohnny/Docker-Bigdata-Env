@@ -5,6 +5,7 @@ demo-example
 *.tar.gz
 *.tar
 *.tgz
+*.jar
 **/*.zip
 **/*.bin
 **/*.gz
