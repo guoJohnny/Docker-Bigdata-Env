@@ -1,0 +1,179 @@
+version:  '2'
+services:
+
+  master1:
+    image: guojohnny/centos:hive
+    container_name: hadoop-master1
+    volumes:
+      - ./test/myword.txt:/home/root/data/myword.txt
+    networks:
+      default:
+        ipv4_address: 172.16.0.101
+    extra_hosts:
+      - "master2:172.16.0.102"
+      - "slave1:172.16.0.201"
+      - "slave2:172.16.0.202"
+      - "slave3:172.16.0.203"
+      - "mysql:172.16.0.1"
+    ports:
+      - "8088:8088"
+      - "50070:50070"
+      - "9000:9000"
+      - "7077:7077"
+      - "8080:8080"
+      - "4040:4040"
+      - "10000:10000"
+      - "10002:10002"
+    hostname: master1
+    environment:
+      ROLE: master
+      HOSTNAME: master1
+    depends_on: 
+      - slave1
+      - slave2
+      - slave3
+      - mysql
+    tty: true
+    stdin_open: true
+
+  master2:
+    image: guojohnny/centos:spark-ha
+    container_name: hadoop-master2
+    # volumes:
+    #   - ./conf-hadoop/:/usr/local/hadoop-2.8.3/etc/hadoop/
+    networks:
+      default:
+        ipv4_address: 172.16.0.102
+    extra_hosts:
+      - "master1:172.16.0.101"
+      - "slave1:172.16.0.201"
+      - "slave2:172.16.0.202"
+      - "slave3:172.16.0.203"
+      - "mysql:172.16.0.1"
+    ports:
+      - "8089:8088"
+      - "50071:50070"
+      - "8081:8080"
+    hostname: master2
+    environment:
+      ROLE: master
+      HOSTNAME: master2
+    depends_on: 
+      - slave1
+      - slave2
+      - slave3
+      - master1
+      - mysql
+    tty: true
+    stdin_open: true
+
+  slave1:
+    image: guojohnny/centos:spark-ha
+    container_name: hadoop-slave1
+    # volumes:
+      # - ./conf-spark/:/usr/local/spark-2.4.5/conf/:ro
+    networks:
+      default:
+        ipv4_address: 172.16.0.201
+    ports:
+      - "8041:8042"
+    extra_hosts:
+      - "master1:172.16.0.101"
+      - "master2:172.16.0.102"
+      - "slave2:172.16.0.202"
+      - "slave3:172.16.0.203"
+      - "mysql:172.16.0.1"
+    hostname: slave1
+    environment:
+      ROLE: slave
+      HOSTNAME: slave1
+      ZK_ID: 1
+    tty: true
+    stdin_open: true
+
+  slave2:
+    image: guojohnny/centos:spark-ha
+    container_name: hadoop-slave2
+    # volumes:
+      # - ./conf-spark/:/usr/local/spark-2.4.5/conf/:ro
+    networks:
+      default:
+        ipv4_address: 172.16.0.202
+    ports:
+      - "8042:8042"
+    extra_hosts:
+      - "master1:172.16.0.101"
+      - "master2:172.16.0.102"
+      - "slave1:172.16.0.201"
+      - "slave3:172.16.0.203"   
+      - "mysql:172.16.0.1" 
+    hostname: slave2
+    environment:
+      ROLE: slave
+      HOSTNAME: slave2
+      ZK_ID: 2
+    tty: true
+    stdin_open: true
+
+  slave3:
+    image: guojohnny/centos:spark-ha
+    container_name: hadoop-slave3
+    # volumes:
+      # - ./conf-spark/:/usr/local/spark-2.4.5/conf/:ro
+    networks:
+      default:
+        ipv4_address: 172.16.0.203
+    ports:
+      - "8043:8042"
+    extra_hosts:
+      - "master1:172.16.0.101"
+      - "master2:172.16.0.102"
+      - "slave1:172.16.0.201"
+      - "slave2:172.16.0.202" 
+      - "mysql:172.16.0.1"   
+    hostname: slave3
+    environment:
+      ROLE: slave
+      HOSTNAME: slave3
+      ZK_ID: 3
+    tty: true
+    stdin_open: true
+
+  mysql:
+    hostname: mysql
+    image: mysql:5.7.17
+    # network_mode: "host" # 如果需要容器使用宿主机IP(内网IP)，则可以配置此项
+    container_name: mysql # 指定容器名称，如果不设置此参数，则由系统自动生成
+    restart: unless-stopped # 设置容器自启模式
+    privileged: true
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci # 设置utf8字符集
+    networks:
+      default:
+        ipv4_address: 172.16.0.1
+    extra_hosts:
+      - "master1:172.16.0.101"
+      - "master2:172.16.0.102"
+      - "slave1:172.16.0.201"
+      - "slave2:172.16.0.202" 
+      - "slave3:172.16.0.203" 
+    environment:
+      - TZ=Asia/Shanghai # 设置容器时区与宿主机保持一致
+      - MYSQL_ROOT_PASSWORD=root # 设置root密码
+    volumes:
+      #- ./volume/data:/var/lib/mysql # 映射数据库保存目录到宿主机，防止数据丢失
+       - ./conf-mysql:/etc/mysql/conf.d # 映射数据库配置文件
+    ports:
+        - "3306:3306"
+
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.16.0.0/16
+        gateway: 172.16.0.249
+
+

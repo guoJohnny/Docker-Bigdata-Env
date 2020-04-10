@@ -224,3 +224,44 @@ Failing this attempt.Diagnostics: Container [pid=931,containerID=container_15859
     WARN yarn.Client: Neither spark.yarn.jars nor spark.yarn.archive is set, falling back to uploading libraries under SPARK_HOME.
     https://www.cnblogs.com/honeybee/p/6379599.html
     https://blog.csdn.net/Coder__CS/article/details/79301969
+
+    hive –service hwi &
+    hive –service hiveserver2 &
+    启动metastore
+        bin/hive --service metastore & 默认端口为9083
+
+    启动hiveserver2
+        nohup hiveserver2 &
+        $HIVE_HOME/bin/hiveserver2 OR $HIVE_HOME/bin/hive --service hiveserver2
+    
+    To add the Spark dependency to Hive:
+        Prior to Hive 2.2.0, link the spark-assembly jar to HIVE_HOME/lib.
+        Since Hive 2.2.0, Hive on Spark runs with Spark 2.0.0 and above, which doesn't have an assembly jar.
+        To run with YARN mode (either yarn-client or yarn-cluster), link the following jars to HIVE_HOME/lib.
+            scala-library
+            spark-core
+            spark-network-common
+        To run with LOCAL mode (for debugging only), link the following jars in addition to those above to HIVE_HOME/lib.
+            chill-java  chill  jackson-module-paranamer  jackson-module-scala  jersey-container-servlet-core
+            jersey-server  json4s-ast  kryo-shaded  minlog  scala-xml  spark-launcher
+            spark-network-shuffle  spark-unsafe  xbean-asm5-shaded
+
+    cp $SPARK_HOME/jars/scala-library-2.12.10.jar $HIVE_HOME/lib 
+    cp $SPARK_HOME/jars/spark-core_2.12-2.4.5.jar $HIVE_HOME/lib 
+    cp $SPARK_HOME/jars/spark-network-common_2.12-2.4.5.jar $HIVE_HOME/lib
+    cp $SPARK_HOME/jars/spark-unsafe_2.12-2.4.5.jar $HIVE_HOME/lib
+
+        <property>
+        <name>spark.yarn.archive</name>
+            <value>hdfs://master:8020/tmp/spark/lib-jars/spark-libs.jar</value>
+        </property>
+
+    <property>
+    <name>hadoop.proxyuser.root.hosts</name>
+    <value>*</value>
+    </property>
+    <property>
+        <name>hadoop.proxyuser.root.groups</name>
+        <value>*</value>
+    </property>
+
