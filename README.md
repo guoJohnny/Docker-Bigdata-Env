@@ -226,7 +226,7 @@ Failing this attempt.Diagnostics: Container [pid=931,containerID=container_15859
     https://blog.csdn.net/Coder__CS/article/details/79301969
 
     hive –service hwi &
-    hive –service hiveserver2 &
+    hive --service hiveserver2 &
     启动metastore
         bin/hive --service metastore & 默认端口为9083
 
@@ -264,4 +264,7 @@ Failing this attempt.Diagnostics: Container [pid=931,containerID=container_15859
         <name>hadoop.proxyuser.root.groups</name>
         <value>*</value>
     </property>
+
+    在hive中需要load hdfs中的文件，之后select 语句才能通过spark 进行查询
+    load data inpath '/user/edureka_212418/hive_emp/emp_details.txt'  into table emp_hive;
 

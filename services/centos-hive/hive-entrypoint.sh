@@ -4,8 +4,8 @@ main(){
     # 启动Hadoop前修改core-site.xml配置
     # 解决 beeline 链接 hive2 出现 User: root is not allowed to impersonate hive 错误
     sed -i '$d' $HADOOP_HOME/etc/hadoop/core-site.xml
-	echo "<property><name><name>hadoop.proxyuser.root.hosts</name></name><value>*</value></property>" >> $HADOOP_HOME/etc/hadoop/core-site.xml
-    echo "<property><name><name>hadoop.proxyuser.root.groups</name></name><value>*</value></property>" >> $HADOOP_HOME/etc/hadoop/core-site.xml
+	echo "<property><name>hadoop.proxyuser.root.hosts</name><value>*</value></property>" >> $HADOOP_HOME/etc/hadoop/core-site.xml
+    echo "<property><name>hadoop.proxyuser.root.groups</name><value>*</value></property>" >> $HADOOP_HOME/etc/hadoop/core-site.xml
     echo "</configuration>" >> $HADOOP_HOME/etc/hadoop/core-site.xml
     
     ./usr/bin/spark-entrypoint.sh

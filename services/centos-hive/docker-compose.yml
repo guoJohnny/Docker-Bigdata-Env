@@ -6,6 +6,7 @@ services:
     container_name: hadoop-master1
     volumes:
       - ./test/myword.txt:/home/root/data/myword.txt
+      - ./conf-hive/spark-slaves:/usr/local/spark-2.4.5/conf/slaves:ro
     networks:
       default:
         ipv4_address: 172.16.0.101

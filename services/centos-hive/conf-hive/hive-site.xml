@@ -5010,12 +5010,12 @@
   </property>
   <property>
     <name>hive.server2.thrift.client.user</name>
-    <value>anonymous</value>
+    <value>root</value>
     <description>Username to use against thrift client</description>
   </property>
   <property>
     <name>hive.server2.thrift.client.password</name>
-    <value>anonymous</value>
+    <value>root</value>
     <description>Password to use against thrift client</description>
   </property>
   <property>
