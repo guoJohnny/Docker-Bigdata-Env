@@ -30,7 +30,7 @@
      </property>
      <property>
          <name>hive.spark.client.channel.log.level</name>
-         <value>INFO</value>
+         <value>ERROR</value>
      </property>
      <property>
          <name>spark.eventLog.enabled</name>
