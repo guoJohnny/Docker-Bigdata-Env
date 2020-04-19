@@ -1,0 +1,61 @@
+version:  '2'
+services:
+  zk_1:
+    image: guojohnny/centos:zookeeper
+    container_name: zk1
+    volumes: 
+      - ./conf-zookeeper/:/usr/local/zookeeper-3.4.12/conf/
+    networks:
+      default:
+        ipv4_address: 192.168.0.201
+    extra_hosts:
+      - "zk2:192.168.0.202"
+      - "zk3:192.168.0.203"
+    hostname: zk1
+    environment:
+      ZK_ID: 1
+    tty: true
+    stdin_open: true
+  zk_2:
+    image: guojohnny/centos:zookeeper
+    container_name: zk2
+    volumes: 
+      - ./conf-zookeeper/:/usr/local/zookeeper-3.4.12/conf/
+    networks:
+      default:
+        ipv4_address: 192.168.0.202
+    extra_hosts:
+      - "zk1:192.168.0.201"
+      - "zk3:192.168.0.203"
+    hostname: zk2
+    environment:
+      ZK_ID: 2
+    tty: true
+    stdin_open: true
+  zk_3:
+    image: guojohnny/centos:zookeeper
+    container_name: zk3
+    volumes: 
+      - ./conf-zookeeper/:/usr/local/zookeeper-3.4.12/conf/
+    networks:
+      default:
+        ipv4_address: 192.168.0.203
+    extra_hosts:
+      - "zk2:192.168.0.202"
+      - "zk3:192.168.0.203"
+    hostname: zk3
+    environment:
+      ZK_ID: 3
+    tty: true
+    stdin_open: true
+
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+    ipam:
+      driver: default
+      config:
+      - subnet: 192.168.0.0/16
+        gateway: 192.168.0.249
