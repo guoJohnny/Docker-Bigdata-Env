@@ -10,6 +10,7 @@ demo-example
 **/*.bin
 **/*.gz
 **/*.rpm
+*.bak
 docker_k8s.code-workspace
 volume/*
 */*/volume/*

@@ -1,3 +1,4 @@
+#!/bin/bash
 main(){
     # 修改master2节点的RM启动sleep时长，保证master1节点的RM状态为active。
     sed -i 's/sleep 20/sleep 50/' /usr/bin/hadoop-ha-entrypoint.sh

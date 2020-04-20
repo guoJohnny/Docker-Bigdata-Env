@@ -1,0 +1,70 @@
+version:  '2'
+services:
+  kafka_1:
+    image: guojohnny/centos:kafka
+    container_name: zk1
+    # volumes: 
+    #   - ./conf-kafka/server.properties:/usr/local/kafka_2.12-2.5.0/config/server.properties
+    networks:
+      default:
+        ipv4_address: 192.168.0.201
+    extra_hosts:
+      - "zk2:192.168.0.202"
+      - "zk3:192.168.0.203"
+    hostname: zk1
+    environment:
+      ZK_ID: 1
+      BROKER_ID: 1
+      LISTENERS: "PLAINTEXT://zk1:9092"
+      KAFKA_HEAP_OPTS: "-Xmx512M -Xms512M"
+    tty: true
+    stdin_open: true
+  kafka_2:
+    image: guojohnny/centos:kafka
+    container_name: zk2
+    # volumes: 
+    #   - ./conf-kafka/server.properties:/usr/local/kafka_2.12-2.5.0/config/server.properties
+    networks:
+      default:
+        ipv4_address: 192.168.0.202
+    extra_hosts:
+      - "zk1:192.168.0.201"
+      - "zk3:192.168.0.203"
+    hostname: zk2
+    environment:
+      ZK_ID: 2
+      BROKER_ID: 2
+      LISTENERS: "PLAINTEXT://zk2:9092"
+      KAFKA_HEAP_OPTS: "-Xmx512M -Xms512M"
+    tty: true
+    stdin_open: true
+  kafka_3:
+    image: guojohnny/centos:kafka
+    container_name: zk3
+    # volumes: 
+    #   - ./conf-kafka/server.properties:/usr/local/kafka_2.12-2.5.0/config/server.properties
+    networks:
+      default:
+        ipv4_address: 192.168.0.203
+    extra_hosts:
+      - "zk2:192.168.0.202"
+      - "zk3:192.168.0.203"
+    hostname: zk3
+    environment:
+      ZK_ID: 3
+      BROKER_ID: 3
+      LISTENERS: "PLAINTEXT://zk3:9092"
+      KAFKA_HEAP_OPTS: "-Xmx512M -Xms512M"
+    tty: true
+    stdin_open: true
+
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+    ipam:
+      driver: default
+      config:
+      - subnet: 192.168.0.0/16
+        gateway: 192.168.0.249

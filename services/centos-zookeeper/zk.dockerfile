@@ -12,13 +12,12 @@ RUN rm -rf $ZOOKEEPER_HOME/bin/*.cmd  \
 	&& rm -rf $ZOOKEEPER_HOME/dist-maven  \
 	&& rm -rf $ZOOKEEPER_HOME/docs  \
 	&& rm -rf $ZOOKEEPER_HOME/src \
-    && cd ${ZOOKEEPER_HOME} \
-	&& mkdir data \
-	&& mkdir log 
+	&& mkdir -p $ZOOKEEPER_HOME/data \
+	&& mkdir -p $ZOOKEEPER_HOME/log 
 
 ADD conf-zookeeper/zoo.cfg $ZOOKEEPER_HOME/conf/
 
 # 开放2181端口
 EXPOSE 2181
 
-CMD ["sh", "-c", "chmod a+x $ZOOKEEPER_HOME/conf/config.sh; $ZOOKEEPER_HOME/conf/config.sh ; $ZOOKEEPER_HOME/bin/zkServer.sh start-foreground; bash"]
+CMD ["sh", "-c", "chmod a+x $ZOOKEEPER_HOME/conf/config.sh; $ZOOKEEPER_HOME/conf/config.sh ;$ZOOKEEPER_HOME/bin/zkServer.sh start-foreground; bash"]
