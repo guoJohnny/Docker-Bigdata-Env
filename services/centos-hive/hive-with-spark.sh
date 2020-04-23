@@ -1,1 +1,0 @@
-sed -i "" 's/<name>hive.execution.engine<\/name><value>mr<\/value>/<name>hive.execution.engine<\/name><value>spark<\/value>/g' hive-site.xml

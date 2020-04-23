@@ -16,6 +16,7 @@
 #
 
 # A Spark Worker will be started on each of the machines listed below.
-slave1
-slave2
-slave3
+# 可以选择不开启Spark Worker 交由 Yarn 管理
+#slave1
+#slave2
+#slave3
