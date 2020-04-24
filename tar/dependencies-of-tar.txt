@@ -1,0 +1,9 @@
+apache-hive-3.1.2-bin.tar.gz
+dependencies-of-tar.txt
+hadoop-2.8.3.tar.gz
+jdk-8u221-linux-x64.tar.gz
+kafka_2.12-2.5.0.tgz
+mysql-connector-java-5.1.47.jar
+scala-2.12.9.tar.gz
+spark-2.4.5-bin-without-hadoop-scala-2.12.tgz
+zookeeper-3.4.12.tar.gz
