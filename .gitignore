@@ -13,3 +13,5 @@ demo-example
 docker_k8s.code-workspace
 volume/*
 */*/volume/*
+.metals
+scala_test

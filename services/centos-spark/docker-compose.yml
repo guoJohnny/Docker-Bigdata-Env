@@ -7,6 +7,7 @@ services:
     volumes:
       - ./conf-spark/:/usr/local/spark-2.4.5/conf/:ro
       - ./test/myword.txt:/home/root/data/myword.txt
+      - ./test/jars/:/usr/local/spark-2.4.5/examples/jars/
     networks:
       default:
         ipv4_address: 172.16.0.101
